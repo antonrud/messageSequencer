@@ -1,7 +1,7 @@
 package de.tuberlin.tubit.gitlab.hagenanuth;
 
 import java.util.LinkedList;
-import java.util.Queue;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import de.tuberlin.tubit.gitlab.hagenanuth.messages.InternalMessage;
@@ -9,7 +9,7 @@ import de.tuberlin.tubit.gitlab.hagenanuth.messages.InternalMessage;
 public class MessageSequencer implements Runnable {
 
 	private LinkedList<Node> nodes;
-	private Queue<InternalMessage> queue;
+	private BlockingQueue<InternalMessage> queue;
 
 	public MessageSequencer() {
 		this.nodes = new LinkedList<Node>();
@@ -22,16 +22,21 @@ public class MessageSequencer implements Runnable {
 
 	public void addToQueue(InternalMessage message) {
 		queue.add(message);
-
-		// TODO Notify thread about new message
 	}
 
 	private void broadcastMessage() {
 
-		for (Node node : nodes) {
-			node.addToQueue(queue.peek());
+		InternalMessage internalMessage = null;
+		try {
+			internalMessage = queue.take();
+		} catch (InterruptedException e) {
+			App.log('f', "Sequencer thread broke down somehow :/");
 		}
-		queue.poll();
+
+		for (Node node : nodes) {
+			node.addToQueue(internalMessage);
+		}
+		App.log('i', "Sequencer broadcasted message.");
 	}
 
 	public LinkedList<Node> getNodes() {
@@ -40,10 +45,10 @@ public class MessageSequencer implements Runnable {
 
 	@Override
 	public void run() {
+		App.log('i', "Sequencer thread started.");
 
-		// TODO Must be notified here (maybe wait() - notify() purpose??)
-
-		broadcastMessage();
-
+		while (true) {
+			broadcastMessage();
+		}
 	}
 }

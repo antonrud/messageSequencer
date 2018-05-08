@@ -1,7 +1,7 @@
 package de.tuberlin.tubit.gitlab.hagenanuth;
 
 import java.util.LinkedList;
-import java.util.Queue;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import de.tuberlin.tubit.gitlab.hagenanuth.messages.InternalMessage;
@@ -10,7 +10,7 @@ import de.tuberlin.tubit.gitlab.hagenanuth.messages.Message;
 public class Node implements Runnable {
 
 	MessageSequencer messageSequencer;
-	private Queue<Message> queue;
+	private BlockingQueue<Message> queue;
 	private LinkedList<InternalMessage> history;
 
 	public Node(MessageSequencer messageSequencer) {
@@ -21,8 +21,6 @@ public class Node implements Runnable {
 
 	public void addToQueue(Message message) {
 		queue.add(message);
-
-		// TODO Notify thread about new message
 	}
 
 	private void sendToMessageSequencer(InternalMessage message) {
@@ -35,16 +33,24 @@ public class Node implements Runnable {
 
 	@Override
 	public void run() {
+		App.log('i', "One Node thread started.");
+		
+		while (true) {
 
-		// TODO Must be notified here (maybe wait() - notify() purpose??)
-
-		Message message = queue.poll();
-		if (message.isInternal()) {
-			storeMessage((InternalMessage) message);
-		} else {
-			message.setInternal();
-			sendToMessageSequencer((InternalMessage) message);
+			Message message = null;
+			try {
+				message = queue.take();
+			} catch (InterruptedException e) {
+				App.log('f', "Node thread broke down somehow:/");
+			}
+			if (message.isInternal()) {
+				storeMessage((InternalMessage) message);
+				App.log('i', "Node stored message.");
+			} else {
+				message.setInternal();
+				sendToMessageSequencer((InternalMessage) message);
+				App.log('i', "Node sent message to sequencer.");
+			}
 		}
-
 	}
 }

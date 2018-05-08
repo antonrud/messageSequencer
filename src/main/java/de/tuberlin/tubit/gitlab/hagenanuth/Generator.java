@@ -21,10 +21,14 @@ public class Generator implements Runnable {
 
 	@Override
 	public void run() {
-		
+		App.log('i', "Generater started.");
+
 		/* Sends messages to random Nodes with random payload */
 		for (int i = 0; i < numMessages; i++) {
 			nodes.get((new Random()).nextInt(nodes.size())).addToQueue(new ExternalMessage((new Random()).nextInt()));
+			App.log('i', "A message is sent to some Node.");
 		}
+
+		App.log('s', "Generater FINISHED.");
 	}
 }
