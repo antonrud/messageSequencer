@@ -2,21 +2,23 @@ package de.tuberlin.tubit.gitlab.hagenanuth;
 
 import java.util.LinkedList;
 import java.util.Random;
+import java.util.concurrent.BlockingQueue;
 
 import de.tuberlin.tubit.gitlab.hagenanuth.messages.ExternalMessage;
+import de.tuberlin.tubit.gitlab.hagenanuth.messages.Message;
 
 public class Generator implements Runnable {
 
-	private LinkedList<Node> nodes;
+	private LinkedList<BlockingQueue<Message>> nodeQueues;
 	private int numMessages;
 
 	public Generator(int numMessages) {
-		this.nodes = new LinkedList<Node>();
+		this.nodeQueues = new LinkedList<BlockingQueue<Message>>();
 		this.numMessages = numMessages;
 	}
 
-	public void registerNode(Node node) {
-		nodes.add(node);
+	public void registerNode(BlockingQueue<Message> nodeQueue) {
+		nodeQueues.add(nodeQueue);
 	}
 
 	@Override
@@ -25,7 +27,13 @@ public class Generator implements Runnable {
 
 		/* Sends messages to random Nodes with random payload */
 		for (int i = 0; i < numMessages; i++) {
-			nodes.get((new Random()).nextInt(nodes.size())).addToQueue(new ExternalMessage((new Random()).nextInt()));
+			try {
+				Thread.sleep(200);
+				nodeQueues.get((new Random()).nextInt(nodeQueues.size()))
+						.put(new ExternalMessage((new Random()).nextInt()));
+			} catch (InterruptedException e) {
+				App.log('f', "Could not add message to node queue from Generater.");
+			}
 			App.log('i', "A message is sent to some Node.");
 		}
 

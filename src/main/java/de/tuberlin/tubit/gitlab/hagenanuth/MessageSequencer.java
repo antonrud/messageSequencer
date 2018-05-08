@@ -5,19 +5,20 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import de.tuberlin.tubit.gitlab.hagenanuth.messages.InternalMessage;
+import de.tuberlin.tubit.gitlab.hagenanuth.messages.Message;
 
 public class MessageSequencer implements Runnable {
 
-	private LinkedList<Node> nodes;
-	private BlockingQueue<InternalMessage> queue;
+	private LinkedList<BlockingQueue<Message>> nodeQueues;
+	public BlockingQueue<InternalMessage> queue;
 
 	public MessageSequencer() {
-		this.nodes = new LinkedList<Node>();
+		this.nodeQueues = new LinkedList<BlockingQueue<Message>>();
 		this.queue = new LinkedBlockingQueue<InternalMessage>();
 	}
 
-	public void registerNode(Node node) {
-		nodes.add(node);
+	public void registerNode(BlockingQueue<Message> nodeQueue) {
+		nodeQueues.add(nodeQueue);
 	}
 
 	public void addToQueue(InternalMessage message) {
@@ -33,14 +34,18 @@ public class MessageSequencer implements Runnable {
 			App.log('f', "Sequencer thread broke down somehow :/");
 		}
 
-		for (Node node : nodes) {
-			node.addToQueue(internalMessage);
+		for (BlockingQueue<Message> nodeQueue : nodeQueues) {
+			try {
+				nodeQueue.put(internalMessage);
+			} catch (InterruptedException e) {
+				App.log('f', "Could not add message to Node queue from Sequencer.");
+			}
 		}
 		App.log('i', "Sequencer broadcasted message.");
 	}
 
-	public LinkedList<Node> getNodes() {
-		return nodes;
+	public BlockingQueue<InternalMessage> getQueue() {
+		return queue;
 	}
 
 	@Override

@@ -2,19 +2,21 @@ package de.tuberlin.tubit.gitlab.hagenanuth;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.LinkedList;
 
 public class App {
 
 	public static void main(String[] args) {
 
-		int numThreads = 0;
+		LinkedList<Node> nodes = new LinkedList<Node>();
+		int numNodes = 0;
 		int numMessages = 0;
 
 		try {
-			numThreads = 2;
-			numMessages = 5;
-			//numThreads = Integer.parseInt(args[0]);
-			//numMessages = Integer.parseInt(args[1]);
+			numNodes = 5;
+			numMessages = 10;
+			// numNodes = Integer.parseInt(args[0]);
+			// numMessages = Integer.parseInt(args[1]);
 		} catch (NumberFormatException e) {
 			System.out.println("NOT A NUMBER!");
 		} catch (NullPointerException e) {
@@ -25,17 +27,18 @@ public class App {
 		Generator generator = new Generator(numMessages);
 
 		/* Create and register Nodes */
-		for (int i = 0; i < numThreads; i++) {
-			Node node = new Node(messageSequencer);
-			messageSequencer.registerNode(node);
-			generator.registerNode(node);
+		for (int i = 0; i < numNodes; i++) {
+			Node node = new Node(messageSequencer.getQueue());
+			messageSequencer.registerNode(node.getQueue());
+			generator.registerNode(node.getQueue());
+			nodes.add(node);
 		}
 		App.log('i', "Nodes registered.");
 
 		Thread messageSequencerThread = new Thread(messageSequencer);
 		messageSequencerThread.start();
 
-		for (Node node : messageSequencer.getNodes()) {
+		for (Node node : nodes) {
 			Thread nodeThread = new Thread(node);
 			nodeThread.start();
 		}
@@ -43,7 +46,7 @@ public class App {
 		Thread generatorThread = new Thread(generator);
 		generatorThread.start();
 
-		App.log('s', "All threads STARTED!");
+		App.log('s', "App.main() finished");
 	}
 
 	public static void log(char type, String message) {
