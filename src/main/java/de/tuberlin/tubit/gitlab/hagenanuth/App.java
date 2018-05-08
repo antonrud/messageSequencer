@@ -13,14 +13,14 @@ public class App {
 		int numMessages = 0;
 
 		try {
-			numNodes = 5;
-			numMessages = 10;
-			// numNodes = Integer.parseInt(args[0]);
-			// numMessages = Integer.parseInt(args[1]);
+			numNodes = Integer.parseInt(args[0]);
+			numMessages = Integer.parseInt(args[1]);
+		} catch (ArrayIndexOutOfBoundsException e) {
+			App.log('e', "USAGE: Provide number of Nodes and number of Messages as arguments.");
+			System.exit(0);
 		} catch (NumberFormatException e) {
-			System.out.println("NOT A NUMBER!");
-		} catch (NullPointerException e) {
-			System.out.println("USAGE: Provide number of threads and number of messages as arguments.");
+			App.log('e', "NOT A NUMBER!");
+			System.exit(0);
 		}
 
 		MessageSequencer messageSequencer = new MessageSequencer();
