@@ -47,9 +47,13 @@ public class Node implements Runnable {
 		return queue;
 	}
 
+	public int getId() {
+		return id;
+	}
+
 	@Override
 	public void run() {
-		App.log('i', "One Node thread started.");
+		App.log('i', "Node " + this.id + " started.");
 
 		while (true) {
 
@@ -62,10 +66,10 @@ public class Node implements Runnable {
 
 			if (message.isInternal()) {
 				storeMessage(new InternalMessage(message.getPayload()));
-				App.log('i', "Node stored message.");
+				App.log('i', "Node " + this.id + " stored message.");
 			} else {
 				sendToMessageSequencer(new InternalMessage(message.getPayload()));
-				App.log('i', "Node sent message to sequencer.");
+				App.log('i', "Node " + this.id + " sent message to sequencer.");
 			}
 		}
 	}
