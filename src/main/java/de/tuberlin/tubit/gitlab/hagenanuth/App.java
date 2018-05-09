@@ -75,6 +75,9 @@ public class App {
 		}
 		System.out.println("\n");
 
+		/* Saves to disc stored messages of every node */
+		nodes.stream().forEach(node -> node.saveStorage());
+
 		/* Prints out stored messages of every node */
 		nodes.stream().forEach(node -> node.retrieveStorage());
 
@@ -83,6 +86,8 @@ public class App {
 	}
 
 	public static void log(char type, String message) {
+
+		// TODO Output to file
 
 		switch (type) {
 		case 'i':

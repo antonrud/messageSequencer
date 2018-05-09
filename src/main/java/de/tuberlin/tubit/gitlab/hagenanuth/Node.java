@@ -37,6 +37,10 @@ public class Node implements Runnable {
 		storage.add(message);
 	}
 
+	public void saveStorage() {
+		// TODO FileOutput
+	}
+
 	public void retrieveStorage() {
 		System.out.print("Node " + id + ": ");
 		storage.stream().forEach(message -> System.out.print(message.getPayload() + " "));
