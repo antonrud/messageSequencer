@@ -41,7 +41,7 @@ public class MessageSequencer implements Runnable {
 				App.log('f', "Could not add message to Node queue from Sequencer.");
 			}
 		}
-		App.log('i', "Sequencer broadcasted message.");
+		App.log('i', "Sequencer broadcasted message with payload " + internalMessage.getPayload());
 	}
 
 	public BlockingQueue<InternalMessage> getQueue() {

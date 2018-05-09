@@ -9,6 +9,7 @@ public class App {
 	static private LinkedList<Node> nodes = new LinkedList<Node>();
 
 	public static void main(String[] args) {
+		App.log('i', "Yay! System started!");
 
 		int numNodes = 0;
 		int numMessages = 0;
@@ -49,7 +50,7 @@ public class App {
 		Thread generatorThread = new Thread(generator);
 		generatorThread.start();
 
-		App.log('s', "App.main() finished");
+		App.log('s', "App.main() finished.");
 	}
 
 	public static void prepareShutdown() {
