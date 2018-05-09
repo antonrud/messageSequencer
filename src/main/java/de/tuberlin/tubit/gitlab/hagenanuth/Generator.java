@@ -30,7 +30,7 @@ public class Generator implements Runnable {
 			try {
 				Thread.sleep(300);
 				nodeQueues.get((new Random()).nextInt(nodeQueues.size()))
-						.put(new ExternalMessage((new Random()).nextInt()));
+						.put(new ExternalMessage((new Random()).nextInt(100)));
 			} catch (InterruptedException e) {
 				App.log('f', "Could not add message to node queue from Generater.");
 			}
