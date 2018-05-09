@@ -27,8 +27,12 @@ public class Generator implements Runnable {
 
 		/* Sends messages to random Nodes with random payload */
 		for (int i = 0; i < numMessages; i++) {
+			try {
 				nodeQueues.get((new Random()).nextInt(nodeQueues.size()))
 						.put(new ExternalMessage((new Random()).nextInt(100)));
+			} catch (InterruptedException e) {
+				App.log('f', "Generater thread broke down :/");
+			}
 			App.log('i', "A message is sent to some Node.");
 		}
 
