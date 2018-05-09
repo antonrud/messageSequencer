@@ -6,9 +6,10 @@ import java.util.LinkedList;
 
 public class App {
 
+	static private LinkedList<Node> nodes = new LinkedList<Node>();
+
 	public static void main(String[] args) {
 
-		LinkedList<Node> nodes = new LinkedList<Node>();
 		int numNodes = 0;
 		int numMessages = 0;
 
@@ -27,8 +28,10 @@ public class App {
 		Generator generator = new Generator(numMessages);
 
 		/* Create and register Nodes */
+		int nodeId = 0;
 		for (int i = 0; i < numNodes; i++) {
-			Node node = new Node(messageSequencer.getQueue());
+			nodeId++;
+			Node node = new Node(nodeId, messageSequencer.getQueue());
 			messageSequencer.registerNode(node.getQueue());
 			generator.registerNode(node.getQueue());
 			nodes.add(node);
@@ -47,6 +50,35 @@ public class App {
 		generatorThread.start();
 
 		App.log('s', "App.main() finished");
+	}
+
+	public static void prepareShutdown() {
+
+		try {
+			Thread.sleep(800);
+		} catch (InterruptedException e) {
+			App.log('f', "Shutdown failed!");
+			e.printStackTrace();
+		}
+
+		/* To give another threads some time to finish their tasks */
+		System.out.print("\nPrepare to shutdown");
+		for (int i = 0; i < 4; i++) {
+			try {
+				Thread.sleep(800);
+			} catch (InterruptedException e) {
+				App.log('f', "Shutdown failed!");
+				e.printStackTrace();
+			}
+			System.out.print(" .");
+		}
+		System.out.println("\n");
+
+		/* Prints out stored messages of every node */
+		nodes.stream().forEach(node -> node.retrieveStorage());
+
+		System.out.println("\nSHUTDOWN!");
+		System.exit(0);
 	}
 
 	public static void log(char type, String message) {

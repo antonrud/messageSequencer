@@ -9,11 +9,13 @@ import de.tuberlin.tubit.gitlab.hagenanuth.messages.Message;
 
 public class Node implements Runnable {
 
+	private int id;
 	private BlockingQueue<InternalMessage> messageSequencerQueue;
 	public BlockingQueue<Message> queue;
 	private LinkedList<InternalMessage> storage;
 
-	public Node(BlockingQueue<InternalMessage> messageSequencerQueue) {
+	public Node(int id, BlockingQueue<InternalMessage> messageSequencerQueue) {
+		this.id = id;
 		this.messageSequencerQueue = messageSequencerQueue;
 		this.queue = new LinkedBlockingQueue<Message>();
 		this.storage = new LinkedList<InternalMessage>();
@@ -33,6 +35,12 @@ public class Node implements Runnable {
 
 	private void storeMessage(InternalMessage message) {
 		storage.add(message);
+	}
+
+	public void retrieveStorage() {
+		System.out.print("Node " + id + ": ");
+		storage.stream().forEach(message -> System.out.print(message.getPayload() + " "));
+		System.out.println();
 	}
 
 	public BlockingQueue<Message> getQueue() {
