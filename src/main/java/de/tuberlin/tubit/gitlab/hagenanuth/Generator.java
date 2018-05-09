@@ -28,6 +28,8 @@ public class Generator implements Runnable {
 		/* Sends messages to random Nodes with random payload */
 		for (int i = 0; i < numMessages; i++) {
 			try {
+				//Uncomment this to generate messages gradually
+				//Thread.sleep(300);
 				nodeQueues.get((new Random()).nextInt(nodeQueues.size()))
 						.put(new ExternalMessage((new Random()).nextInt(100)));
 			} catch (InterruptedException e) {
