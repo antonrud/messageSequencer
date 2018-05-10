@@ -16,7 +16,6 @@ public class App {
 	static private Thread generatorThread;
 
 	public static void main(String[] args) {
-		App.log('i', "Yay! App started!");
 
 		int numNodes = 0;
 		int numMessages = 0;
@@ -31,6 +30,8 @@ public class App {
 			App.log('e', "NOT A NUMBER!");
 			System.exit(0);
 		}
+
+		App.log('i', "Yay! App started!");
 
 		MessageSequencer messageSequencer = new MessageSequencer();
 		Generator generator = new Generator(numMessages);
