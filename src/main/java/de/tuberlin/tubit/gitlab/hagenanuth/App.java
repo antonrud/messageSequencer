@@ -18,12 +18,12 @@ public class App {
 	public static void main(String[] args) {
 		App.log('i', "Yay! App started!");
 
-		int numNodes = 5;
-		int numMessages = 5;
+		int numNodes = 0;
+		int numMessages = 0;
 
 		try {
-			// numNodes = Integer.parseInt(args[0]);
-			// numMessages = Integer.parseInt(args[1]);
+			numNodes = Integer.parseInt(args[0]);
+			numMessages = Integer.parseInt(args[1]);
 		} catch (ArrayIndexOutOfBoundsException e) {
 			App.log('e', "USAGE: Provide number of Nodes and number of Messages as arguments.");
 			System.exit(0);
