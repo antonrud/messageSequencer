@@ -7,16 +7,19 @@ import java.util.LinkedList;
 public class App {
 
 	static private LinkedList<Node> nodes = new LinkedList<Node>();
+	static private LinkedList<Thread> nodeThreads = new LinkedList<Thread>();
+	static private Thread messageSequencerThread;
+	static private Thread generatorThread;
 
 	public static void main(String[] args) {
-		App.log('i', "Yay! System started!");
+		App.log('i', "Yay! App started!");
 
-		int numNodes = 0;
-		int numMessages = 0;
+		int numNodes = 5;
+		int numMessages = 10;
 
 		try {
-			numNodes = Integer.parseInt(args[0]);
-			numMessages = Integer.parseInt(args[1]);
+			// numNodes = Integer.parseInt(args[0]);
+			// numMessages = Integer.parseInt(args[1]);
 		} catch (ArrayIndexOutOfBoundsException e) {
 			App.log('e', "USAGE: Provide number of Nodes and number of Messages as arguments.");
 			System.exit(0);
@@ -39,15 +42,16 @@ public class App {
 		}
 		App.log('i', "Nodes registered.");
 
-		Thread messageSequencerThread = new Thread(messageSequencer);
+		messageSequencerThread = new Thread(messageSequencer);
 		messageSequencerThread.start();
 
 		for (Node node : nodes) {
 			Thread nodeThread = new Thread(node);
+			nodeThreads.add(nodeThread);
 			nodeThread.start();
 		}
 
-		Thread generatorThread = new Thread(generator);
+		generatorThread = new Thread(generator);
 		generatorThread.start();
 
 		App.log('s', "App.main() finished.");
@@ -55,18 +59,11 @@ public class App {
 
 	public static void prepareShutdown() {
 
-		try {
-			Thread.sleep(800);
-		} catch (InterruptedException e) {
-			App.log('f', "Shutdown failed!");
-			e.printStackTrace();
-		}
-
-		/* To give another threads some time to finish their tasks */
+		/* Just for some cool shutdown animation */
 		System.out.print("\nPrepare to shutdown");
 		for (int i = 0; i < 4; i++) {
 			try {
-				Thread.sleep(800);
+				Thread.sleep(500);
 			} catch (InterruptedException e) {
 				App.log('f', "Shutdown failed!");
 				e.printStackTrace();
@@ -75,8 +72,14 @@ public class App {
 		}
 		System.out.println("\n");
 
+		/* Interrupt threads */
+		messageSequencerThread.interrupt();
+		for (Thread nodeThread : nodeThreads) {
+			nodeThread.interrupt();
+		}
+
 		/* Saves to disc stored messages of every node */
-		nodes.stream().forEach(node -> node.saveStorage());
+		nodes.stream().forEach(node -> node.writeStorageToFile());
 
 		/* Prints out stored messages of every node */
 		nodes.stream().forEach(node -> node.retrieveStorage());

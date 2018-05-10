@@ -29,7 +29,7 @@ public class Node implements Runnable {
 		try {
 			messageSequencerQueue.put(message);
 		} catch (InterruptedException e) {
-			App.log('f', "Could not add message to Sequencer queue.");
+			App.log('f', "Node " + this.id + " could not add message to Sequencer queue.");
 		}
 	}
 
@@ -37,12 +37,12 @@ public class Node implements Runnable {
 		storage.add(message);
 	}
 
-	public void saveStorage() {
+	public void writeStorageToFile() {
 		// TODO FileOutput
 	}
 
 	public void retrieveStorage() {
-		System.out.print("Node " + id + ": ");
+		System.out.print("Node " + this.id + ": ");
 		storage.stream().forEach(message -> System.out.print(message.getPayload() + " "));
 		System.out.println();
 	}
@@ -59,21 +59,25 @@ public class Node implements Runnable {
 	public void run() {
 		App.log('i', "Node " + this.id + " started.");
 
-		while (true) {
+		while (!Thread.currentThread().isInterrupted()) {
 
 			Message message = null;
 			try {
 				message = queue.take();
 			} catch (InterruptedException e) {
-				App.log('f', "Node thread broke down somehow:/");
+				App.log('w', "Node " + this.id + " was interrupted");
 			}
 
-			if (message.isInternal()) {
-				storeMessage(new InternalMessage(message.getPayload()));
-				App.log('i', "Node " + this.id + " stored message.");
-			} else {
-				sendToMessageSequencer(new InternalMessage(message.getPayload()));
-				App.log('i', "Node " + this.id + " sent message to sequencer.");
+			try {
+				if (message.isInternal()) {
+					storeMessage(new InternalMessage(message.getPayload()));
+					App.log('i', "Node " + this.id + " stored message.");
+				} else {
+					sendToMessageSequencer(new InternalMessage(message.getPayload()));
+					App.log('i', "Node " + this.id + " sent message to sequencer.");
+				}
+			} catch (NullPointerException e) {
+				App.log('w', "Expected NullPointerException after interrupting Node " + this.id);
 			}
 		}
 	}

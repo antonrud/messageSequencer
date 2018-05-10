@@ -42,6 +42,13 @@ public class Generator implements Runnable {
 
 		App.log('s', "Generater FINISHED.");
 
+		/* Give other threads some time to finish their tasks */
+		try {
+			Thread.sleep(500);
+		} catch (InterruptedException e) {
+			App.log('f', "Generator broke just before shutdown");
+		}
+
 		App.prepareShutdown();
 	}
 }

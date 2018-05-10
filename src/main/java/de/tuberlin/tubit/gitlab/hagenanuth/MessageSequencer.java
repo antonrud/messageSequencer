@@ -31,7 +31,7 @@ public class MessageSequencer implements Runnable {
 		try {
 			internalMessage = queue.take();
 		} catch (InterruptedException e) {
-			App.log('f', "Sequencer thread broke down somehow :/");
+			App.log('w', "Sequencer was interrupted");
 		}
 
 		for (BlockingQueue<Message> nodeQueue : nodeQueues) {
@@ -52,8 +52,12 @@ public class MessageSequencer implements Runnable {
 	public void run() {
 		App.log('i', "Sequencer thread started.");
 
-		while (true) {
-			broadcastMessage();
+		while (!Thread.currentThread().isInterrupted()) {
+			try {
+				broadcastMessage();
+			} catch (NullPointerException e) {
+				App.log('w', "Expected NullPointerException after interrupting Sequencer");
+			}
 		}
 	}
 }
