@@ -1,5 +1,9 @@
 package de.tuberlin.tubit.gitlab.hagenanuth;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.LinkedList;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -38,13 +42,32 @@ public class Node implements Runnable {
 	}
 
 	public void writeStorageToFile() {
-		// TODO FileOutput
+
+		try {
+			File file = new File("storage/node_" + this.id + ".txt");
+			file.getParentFile().mkdirs();
+			file.createNewFile();
+
+			FileWriter fileWriter = new FileWriter(file);
+			BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
+
+			for (InternalMessage message : storage) {
+				bufferedWriter.write("" + message.getPayload());
+				bufferedWriter.newLine();
+			}
+
+			bufferedWriter.close();
+			fileWriter.close();
+		} catch (IOException ioe) {
+			App.log('f', "Node " + this.id + " could not write to file");
+		}
 	}
 
 	public void retrieveStorage() {
-		System.out.print("Node " + this.id + ": ");
+		// System.out.println();
+		System.out.print("\nNode " + this.id + ": ");
 		storage.stream().forEach(message -> System.out.print(message.getPayload() + " "));
-		System.out.println();
+		// System.out.println();
 	}
 
 	public BlockingQueue<Message> getQueue() {

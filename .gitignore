@@ -1,3 +1,6 @@
+# Project specific
+storage/
+
 # Bash scripts
 *.sh
 
@@ -9,7 +12,11 @@
 *.properties
 
 # Log file
+log.txt
+logs.txt
 *.log
+log/
+logs/
 
 # BlueJ files
 *.ctxt

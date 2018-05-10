@@ -1,5 +1,9 @@
 package de.tuberlin.tubit.gitlab.hagenanuth;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.LinkedList;
@@ -15,7 +19,7 @@ public class App {
 		App.log('i', "Yay! App started!");
 
 		int numNodes = 5;
-		int numMessages = 10;
+		int numMessages = 5;
 
 		try {
 			// numNodes = Integer.parseInt(args[0]);
@@ -78,43 +82,65 @@ public class App {
 			nodeThread.interrupt();
 		}
 
+		/* Clean previous storage before saving to disk */
+		File[] storageDirectory = (new File("storage")).listFiles();
+		if (storageDirectory != null) {
+			for (File file : storageDirectory) {
+				file.delete();
+			}
+		}
+
 		/* Saves to disc stored messages of every node */
 		nodes.stream().forEach(node -> node.writeStorageToFile());
+		App.log('i', "All data is written to disc");
 
 		/* Prints out stored messages of every node */
 		nodes.stream().forEach(node -> node.retrieveStorage());
 
-		System.out.println("\nSHUTDOWN!");
+		System.out.println("\n\nSHUTDOWN!");
 		System.exit(0);
 	}
 
 	public static void log(char type, String message) {
 
-		// TODO Output to file
+		String logEvent = "";
 
 		switch (type) {
 		case 'i':
-			System.out.println(
-					LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")) + " [INFO] " + message);
-			break;
-		case 'f':
-			System.out.println(
-					LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")) + " [FAIL] " + message);
+			logEvent = LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")) + " [INFO] " + message;
 			break;
 		case 'w':
-			System.out.println(
-					LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")) + " [WARNING] " + message);
+			logEvent = LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")) + " [WARNING] " + message;
 			break;
 		case 's':
-			System.out.println(
-					LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")) + " [SUCCESS] " + message);
+			logEvent = LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")) + " [SUCCESS] " + message;
+			break;
+		case 'f':
+			logEvent = LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")) + " [FAIL] " + message;
 			break;
 		case 'e':
-			System.out.println(
-					LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")) + " [ERROR] " + message);
+			logEvent = LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")) + " [ERROR] " + message;
 			break;
 		default:
-			System.out.println(LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")) + " " + message);
+			logEvent = LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")) + " " + message;
 		}
+
+		try {
+			File file = new File("log.txt");
+			file.createNewFile();
+
+			FileWriter fileWriter = new FileWriter(file, true);
+			BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
+
+			bufferedWriter.write(logEvent);
+			bufferedWriter.newLine();
+
+			bufferedWriter.close();
+			fileWriter.close();
+		} catch (IOException ioe) {
+			App.log('f', "Could not write log event to file");
+		}
+
+		System.out.println(logEvent);
 	}
 }
