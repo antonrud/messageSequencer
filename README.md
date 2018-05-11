@@ -6,7 +6,7 @@ This project was a part of our homework for Distributed Systems class at Technic
 
 * **Anton Rudacov** - [@antonrud](https://github.com/antonrud)
 * **Stefan Pawlowski** - [@Stefuniverse](https://github.com/Stefuniverse)
-* **Hagen Anuth** - [@hagenanuth](https://gitlab.tubit.tu-berlin.de/hagenanuth)
+* **Hagen Anuth** - [@Hagislav](https://github.com/Hagislav)
 
 
 ## License
