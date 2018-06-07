@@ -8,7 +8,17 @@ TODO verbal description
 
 
 ## How to use
-TODO...
+1. Pack with maven:
+```
+mvn package
+```
+
+2. Run providing a number of nodes that you wish and a number of messages to be sent, e.g.:
+```
+java -jar target/vs18ha2-1.0-SNAPSHOT-jar-with-dependencies.jar 5 10
+```
+
+Logs are saved to log.txt, node memory is represented by storage/node_xxx.txt
 
 ## Autors
 
