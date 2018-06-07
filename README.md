@@ -18,7 +18,7 @@ mvn package
 java -jar target/vs18ha2-1.0-SNAPSHOT-jar-with-dependencies.jar 5 10
 ```
 
-Logs are saved to log.txt, node memory is represented by storage/node_xxx.txt
+Logs are saved to _log.txt_, node memory is represented by _storage/node_xxx.txt_
 
 ## Autors
 
